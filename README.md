@@ -2,7 +2,7 @@
 the beanstalkd client of java be based netty4 <br>
 beanstalk4j是beanstalkd的java版本的客户端，基于netty4开发，作为消息中间件，分为消息提供者provider和消息消费者consumer，为了简便，beanstalkd中
 的每个tube对应netty中的一个channel <br>
-        * 消息提供者示例：
+         消息提供者示例：
 ```java
         Set<String> servers = new HashSet<>();
         servers.add("192.168.209.132:11300");
@@ -14,7 +14,7 @@ beanstalk4j是beanstalkd的java版本的客户端，基于netty4开发，作为�
         provider1.quit();
 ```     
    
-    * 消息消费者:     
+     消息消费者:     
 ```java
         Set<String> servers = new HashSet<>();
         servers.add("192.168.209.132:11300");
