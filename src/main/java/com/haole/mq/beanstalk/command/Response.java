@@ -7,6 +7,11 @@ public class Response {
     private String statusLine;
     private byte[] data;
 
+    public void reset() {
+        this.statusLine = "";
+        data = new byte[0];
+    }
+
     public String getStatusLine() {
         return statusLine;
     }
