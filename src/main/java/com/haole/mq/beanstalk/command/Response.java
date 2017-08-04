@@ -12,6 +12,15 @@ public class Response {
         data = new byte[0];
     }
 
+    public Response clone() {
+        Response response = new Response();
+        response.setStatusLine(this.statusLine);
+        byte[] cloneData = new byte[this.data.length];
+        System.arraycopy(this.data,0,cloneData,0,this.data.length);
+        response.setData(cloneData);
+        return response;
+    }
+
     public String getStatusLine() {
         return statusLine;
     }
