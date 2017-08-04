@@ -9,21 +9,18 @@ import java.nio.charset.Charset;
 /**
  * Created by shengjunzhao on 2017/7/30.
  */
-public class BufferWriter implements Callback<WriteCallback> {
+public class BeanstalkBufferWriter implements Callback<WriteCallback> {
 
     private AsynchronousSocketChannel channel;
     private ByteBuffer buffer;
-    private Charset charset;
 
-    public BufferWriter(AsynchronousSocketChannel channel, Charset charset) {
+    public BeanstalkBufferWriter(AsynchronousSocketChannel channel) {
         this.channel = channel;
-        this.charset = charset;
     }
     public void write(byte[] data, WriteCallback write) {
         buffer = ByteBuffer.wrap(data);
         channel.write(buffer, write, this);
     }
-
 
     @Override
     public void completed(Integer result, WriteCallback context) {
