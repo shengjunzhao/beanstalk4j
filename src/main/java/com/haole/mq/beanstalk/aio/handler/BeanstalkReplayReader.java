@@ -25,6 +25,14 @@ public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback
         this.channel = channel;
     }
 
+    public void read(ResponseCallback<Response> protocol) {
+        response.reset();
+        if (buffer == null)
+            buffer = ByteBuffer.allocateDirect(1024);
+        buffer.clear();
+        channel.read(buffer, protocol, this);
+    }
+
     @Override
     protected void readCompleted(Integer result, ResponseCallback<Response> context) {
         ByteBuffer buffer = this.buffer;
