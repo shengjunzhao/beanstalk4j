@@ -1,37 +1,27 @@
 package com.haole.mq.beanstalk.impl;
 
-import com.haole.mq.beanstalk.BeanstalkClient;
 import com.haole.mq.beanstalk.BeanstalkConsumer;
 import com.haole.mq.beanstalk.Job;
-import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * beanstalk client 消费端
- * Created by shengjunzhao on 2017/6/8.
+ * Created by shengjunzhao on 2017/8/5.
  */
-public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsumer {
+public class AioBeanstalkConsumer implements BeanstalkConsumer {
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultBeanstalkProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(AioBeanstalkConsumer.class);
 
-    private DefaultBeanstalkClient client;
-    private Channel channel;
+    private AioBeanstalkClient client;
 
-    public DefaultBeanstalkConsumer(Set<String> servers, String tube) throws InterruptedException {
-        client = DefaultBeanstalkClient.getInstance();
-        client.addServers(servers);
-        Channel ch = client.getChannel(tube, false);
-        if (null == ch) {
-            throw new RuntimeException("can't connect server");
-        }
-        this.channel = ch;
-        if (!client.watch(ch, tube)) {
+    public AioBeanstalkConsumer(InetSocketAddress remote, String tube) throws IOException, InterruptedException {
+        client = new AioBeanstalkClient(remote);
+        if (!client.watch(tube)) {
             throw new RuntimeException("can't watch tube " + tube);
         }
     }
@@ -39,7 +29,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean watch(String tube) {
         try {
-            boolean result = client.watch(channel, tube);
+            boolean result = client.watch(tube);
             return result;
         } catch (InterruptedException e) {
             log.error("watch exception {}", e);
@@ -50,7 +40,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Job reserve(long timeout) {
         try {
-            Job job = client.reserve(channel, timeout);
+            Job job = client.reserve(timeout);
             return job;
         } catch (InterruptedException e) {
             log.error("reserve exception {}", e);
@@ -61,7 +51,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean delete(long id) {
         try {
-            boolean result = client.delete(channel, id);
+            boolean result = client.delete(id);
             return result;
         } catch (InterruptedException e) {
             log.error("delete exception {}", e);
@@ -72,7 +62,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean release(long id, int priority, int delay) {
         try {
-            boolean result = client.release(channel, id, priority, delay);
+            boolean result = client.release(id, priority, delay);
             return result;
         } catch (InterruptedException e) {
             log.error("release exception {}", e);
@@ -83,7 +73,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean bury(long id, int priority) {
         try {
-            boolean result = client.bury(channel, id, priority);
+            boolean result = client.bury(id, priority);
             return result;
         } catch (InterruptedException e) {
             log.error("bury exception {}", e);
@@ -94,7 +84,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean touch(long id) {
         try {
-            boolean result = client.touch(channel, id);
+            boolean result = client.touch(id);
             return result;
         } catch (InterruptedException e) {
             log.error("touch exception {}", e);
@@ -105,7 +95,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean ignore(String tube) {
         try {
-            boolean result = client.ignore(channel, tube);
+            boolean result = client.ignore(tube);
             return result;
         } catch (InterruptedException e) {
             log.error("ignore exception {}", e);
@@ -116,7 +106,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Job peek(long id) {
         try {
-            Job job = client.peek(channel, id);
+            Job job = client.peek(id);
             return job;
         } catch (InterruptedException e) {
             log.error("peek exception {}", e);
@@ -127,7 +117,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Job peekReady() {
         try {
-            Job job = client.peekReady(channel);
+            Job job = client.peekReady();
             return job;
         } catch (InterruptedException e) {
             log.error("peekReady exception {}", e);
@@ -138,7 +128,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Job peekDelayed() {
         try {
-            Job job = client.peekDelayed(channel);
+            Job job = client.peekDelayed();
             return job;
         } catch (InterruptedException e) {
             log.error("peekDelayed exception {}", e);
@@ -149,7 +139,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Job peekBuried() {
         try {
-            Job job = client.peekBuried(channel);
+            Job job = client.peekBuried();
             return job;
         } catch (InterruptedException e) {
             log.error("peekBuried exception {}", e);
@@ -160,7 +150,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean kick(long bound) {
         try {
-            boolean result = client.kick(channel, bound);
+            boolean result = client.kick(bound);
             return result;
         } catch (InterruptedException e) {
             log.error("kick exception {}", e);
@@ -171,7 +161,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean kickJob(long id) {
         try {
-            boolean result = client.kickJob(channel, id);
+            boolean result = client.kickJob(id);
             return result;
         } catch (InterruptedException e) {
             log.error("kick exception {}", e);
@@ -182,7 +172,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public List<String> listTubes() {
         try {
-            List<String> tubes = client.listTubes(channel);
+            List<String> tubes = client.listTubes();
             return tubes;
         } catch (InterruptedException e) {
             log.error("listTubes exception {}", e);
@@ -195,7 +185,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public String listTubeUsed() {
         try {
-            String tube = client.listTubeUsed(channel);
+            String tube = client.listTubeUsed();
             return tube;
         } catch (InterruptedException e) {
             log.error("listTubeUsed exception {}", e);
@@ -206,7 +196,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public List<String> listTubesWatched() {
         try {
-            List<String> watchedTubes = client.listTubesWatched(channel);
+            List<String> watchedTubes = client.listTubesWatched();
             return watchedTubes;
         } catch (InterruptedException e) {
             log.error("listTubesWatched exception {}", e);
@@ -219,7 +209,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public boolean pauseTube(String tube, int delay) {
         try {
-            boolean result = client.pauseTube(channel, tube, delay);
+            boolean result = client.pauseTube(tube, delay);
             return result;
         } catch (InterruptedException e) {
             log.error("pauseTube exception {}", e);
@@ -230,7 +220,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Map<String, String> stats() {
         try {
-            Map<String, String> stat = client.stats(channel);
+            Map<String, String> stat = client.stats();
             return stat;
         } catch (IOException e) {
             log.error("stats exception {}", e);
@@ -243,7 +233,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Map<String, String> statsJob(long id) {
         try {
-            Map<String, String> stat = client.statsJob(channel, id);
+            Map<String, String> stat = client.statsJob(id);
             return stat;
         } catch (IOException e) {
             log.error("statsJob exception {}", e);
@@ -256,7 +246,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public Map<String, String> statsTube(String tube) {
         try {
-            Map<String, String> stat = client.statsTube(channel, tube);
+            Map<String, String> stat = client.statsTube(tube);
             return stat;
         } catch (IOException e) {
             log.error("statsTube exception {}", e);
@@ -269,7 +259,7 @@ public class DefaultBeanstalkConsumer implements BeanstalkClient, BeanstalkConsu
     @Override
     public void quit() {
         try {
-            client.quit(channel);
+            client.quit();
         } catch (InterruptedException e) {
             log.error("quit exception {}", e);
         }
