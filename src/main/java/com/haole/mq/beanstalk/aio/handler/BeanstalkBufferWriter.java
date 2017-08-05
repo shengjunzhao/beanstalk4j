@@ -34,8 +34,8 @@ public class BeanstalkBufferWriter implements Callback<WriteCallback> {
     }
 
     @Override
-    public void failed(Throwable exc, WriteCallback context) {
+    public void failed(Throwable cause, WriteCallback context) {
         buffer = null;
-        context.writeFailed(exc);
+        context.writeFailed(cause);
     }
 }

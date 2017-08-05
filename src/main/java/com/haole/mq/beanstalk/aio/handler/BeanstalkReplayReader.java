@@ -127,7 +127,7 @@ public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback
     }
 
     @Override
-    public void failed(Throwable exc, ResponseCallback<Response> context) {
-        context.failed(exc);
+    public void failed(Throwable cause, ResponseCallback<Response> context) {
+        context.failed(cause);
     }
 }
