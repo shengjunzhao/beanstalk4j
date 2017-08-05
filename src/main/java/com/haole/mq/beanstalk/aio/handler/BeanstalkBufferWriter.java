@@ -2,6 +2,7 @@ package com.haole.mq.beanstalk.aio.handler;
 
 import com.haole.mq.beanstalk.aio.Callback;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.charset.Charset;
@@ -17,8 +18,9 @@ public class BeanstalkBufferWriter implements Callback<WriteCallback> {
     public BeanstalkBufferWriter(AsynchronousSocketChannel channel) {
         this.channel = channel;
     }
-    public void write(byte[] data, WriteCallback write) {
-        buffer = ByteBuffer.wrap(data);
+
+    public void write(ByteBuffer buffer, WriteCallback write) {
+        this.buffer = buffer;
         channel.write(buffer, write, this);
     }
 
@@ -37,5 +39,10 @@ public class BeanstalkBufferWriter implements Callback<WriteCallback> {
     public void failed(Throwable cause, WriteCallback context) {
         buffer = null;
         context.writeFailed(cause);
+    }
+
+    public void close() throws IOException {
+        if (channel.isOpen())
+            channel.close();
     }
 }

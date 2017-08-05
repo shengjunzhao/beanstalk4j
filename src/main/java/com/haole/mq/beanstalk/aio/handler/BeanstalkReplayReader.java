@@ -91,7 +91,7 @@ public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback
                 return;
             }
             buffer.flip();
-            fillResponseData(buffer,0,buffer.limit());
+            fillResponseData(buffer, 0, buffer.limit());
             buffer.clear();
             channel.read(buffer, context, this);
         } catch (Exception ex) {
@@ -129,5 +129,10 @@ public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback
     @Override
     public void failed(Throwable cause, ResponseCallback<Response> context) {
         context.failed(cause);
+    }
+
+    public void close() throws IOException {
+        if (channel.isOpen())
+            channel.close();
     }
 }
