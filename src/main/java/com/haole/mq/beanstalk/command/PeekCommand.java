@@ -13,5 +13,5 @@ public class PeekCommand extends AbstractCommand {
         setCommandLine("peek-" + pt.name());
     }
 
-    public enum PeekType {ready, delayed, buried;}
+    public enum PeekType {ready, delayed, buried}
 }
