@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
@@ -28,10 +29,28 @@ public class PutCommand extends AbstractCommand {
     }
 
     @Override
-    public ByteBuf prepareRequest(ByteBuf sendBuf,Charset charset, String delimiter) {
-        sendBuf = super.prepareRequest(sendBuf,charset,delimiter);
+    public ByteBuf prepareRequest(ByteBuf sendBuf, Charset charset, String delimiter) {
+        sendBuf = super.prepareRequest(sendBuf, charset, delimiter);
         sendBuf.writeBytes(data);
         sendBuf.writeBytes(delimiter.getBytes(charset));
+        return sendBuf;
+    }
+
+    @Override
+    public ByteBuffer prepareRequest(ByteBuffer sendBuf, Charset charset, String delimiter) {
+        sendBuf = super.prepareRequest(sendBuf, charset, delimiter);
+        int remainder = sendBuf.capacity() - sendBuf.position();
+        if (data.length > remainder - 2) {
+            int capacity = sendBuf.position() + data.length + 2;
+            int blockNum = capacity / blockSize;
+            capacity = (blockNum + 1) * blockSize;
+            ByteBuffer allocBuffer = ByteBuffer.allocateDirect(capacity);
+            sendBuf.flip();
+            allocBuffer.put(sendBuf);
+            sendBuf = allocBuffer;
+        }
+        sendBuf.put(data);
+        sendBuf.put(delimiter.getBytes(charset));
         return sendBuf;
     }
 }

@@ -20,6 +20,7 @@ public class BeanstalkBufferWriter implements Callback<WriteCallback> {
     }
 
     public void write(ByteBuffer buffer, WriteCallback write) {
+        buffer.flip();
         this.buffer = buffer;
         channel.write(buffer, write, this);
     }

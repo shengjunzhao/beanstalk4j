@@ -1,6 +1,8 @@
 package com.haole.mq.beanstalk.aio.handler;
 
 import com.haole.mq.beanstalk.command.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -14,6 +16,8 @@ import java.nio.charset.CharsetDecoder;
  * Created by shengjunzhao on 2017/7/30.
  */
 public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback<Response>> {
+
+    private static final Logger log = LoggerFactory.getLogger(BeanstalkReplayReader.class);
 
     private Charset decoder;
     private ByteBuffer buffer;
@@ -51,6 +55,7 @@ public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback
                     buffer.flip();
                     byte[] commandByte = buffer2byte(buffer, 0, i - 1);
                     String commandLine = new String(commandByte, decoder);
+                    log.debug("receive command: {}",commandLine);
                     response.setStatusLine(commandLine);
                     String[] spilts = commandLine.split(" ");
                     String resultInfo = spilts[0];
@@ -59,11 +64,13 @@ public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback
                         if (bytesStr.matches("\\d+")) {
                             int bytes = Integer.valueOf(bytesStr);
                             if (bytes <= position - i - 1 - 2) {
+                                byte rn = buffer.get();
+                                rn = buffer.get();
                                 fillResponseData(buffer, i + 1, bytes);
+                                Response resultResponse = response.clone();
                                 response.reset();
                                 fillResponseData(buffer, i + 1 + bytes, position - 1 - i - 1 - bytes);
                                 buffer.clear();
-                                Response resultResponse = response.clone();
                                 context.onResponse(resultResponse);
                                 // channel.read(buffer, context, this);
                                 return;
@@ -104,7 +111,7 @@ public class BeanstalkReplayReader extends AbstractReadCallback<ResponseCallback
 //        int end = offset + len;
 //        for (int i = offset; i < end; i++)
 //            bytes[i - offset] = buffer.get(i);
-        buffer.get(bytes, offset, len);
+        buffer.get(bytes, 0, len);
         return bytes;
     }
 

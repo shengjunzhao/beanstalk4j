@@ -26,6 +26,13 @@ public class AioBeanstalkConsumer implements BeanstalkConsumer {
         }
     }
 
+    public AioBeanstalkConsumer(String host, int port, String tube) throws IOException, InterruptedException {
+        client = new AioBeanstalkClient(host, port);
+        if (!client.watch(tube)) {
+            throw new RuntimeException("can't watch tube " + tube);
+        }
+    }
+
     @Override
     public boolean watch(String tube) {
         try {

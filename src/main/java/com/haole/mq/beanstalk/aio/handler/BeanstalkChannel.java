@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.charset.Charset;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by shengjunzhao on 2017/8/4.
@@ -23,8 +25,10 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
     private BeanstalkReplayReader replayReader;
     private BeanstalkBufferWriter bufferWriter;
     private LinkedBlockingQueue<Response> queue = new LinkedBlockingQueue<>();
-    private Charset charset;
+    private Charset charset = Charset.forName("UTF-8");
     private String delimiter = "\r\n";
+    private Semaphore semaphore = new Semaphore(0);
+    private AtomicBoolean isConnected = new AtomicBoolean(false);
 
 
     public void connect(String host, int port) throws IOException {
@@ -48,8 +52,12 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
     }
 
     public Response write(Command command) throws InterruptedException {
+        while (!isConnected.get()) {}
+//        semaphore.acquire();
+
         ByteBuffer buffer = ByteBuffer.allocateDirect(Command.blockSize);
         buffer = command.prepareRequest(buffer, charset, delimiter);
+        log.debug("&&&&& command={}", command.getCommandLine());
         bufferWriter.write(buffer, this);
         Response response = queue.take();
         return response;
@@ -90,7 +98,9 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
         charset = Charset.forName("UTF-8");
         replayReader = new BeanstalkReplayReader(charset, channel);
         bufferWriter = new BeanstalkBufferWriter(channel);
-        replayReader.read(this);
+//        replayReader.read(this);
+//        semaphore.release();
+        isConnected.set(true);
     }
 
 
@@ -108,6 +118,7 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
     public void onResponse(Response respone) {
         try {
             queue.put(respone);
+//            semaphore.release();
         } catch (InterruptedException e) {
             log.error("read reponse {}", e);
         }

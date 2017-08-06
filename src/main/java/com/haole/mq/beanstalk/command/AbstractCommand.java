@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
@@ -23,6 +24,13 @@ public class AbstractCommand implements Command {
     public ByteBuf prepareRequest(ByteBuf sendBuf,Charset charset, String delimiter) {
         sendBuf.writeBytes(this.commandLine.getBytes(charset));
         sendBuf.writeBytes(delimiter.getBytes(charset));
+        return sendBuf;
+    }
+
+    @Override
+    public ByteBuffer prepareRequest(ByteBuffer sendBuf, Charset charset, String delimiter) {
+        sendBuf.put(this.commandLine.getBytes(charset));
+        sendBuf.put(delimiter.getBytes(charset));
         return sendBuf;
     }
 

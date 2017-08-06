@@ -26,6 +26,13 @@ public class AioBeanstalkProvider implements BeanstalkProvider {
         }
     }
 
+    public AioBeanstalkProvider(String host, int port, String tube) throws IOException, InterruptedException {
+        client = new AioBeanstalkClient(host, port);
+        if (!client.use(tube)) {
+            throw new RuntimeException("can't use tube " + tube);
+        }
+    }
+
     @Override
     public boolean use(String tube) {
         try {
