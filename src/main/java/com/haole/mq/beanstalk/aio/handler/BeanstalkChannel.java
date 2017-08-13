@@ -23,7 +23,7 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
     private final static Logger log = LoggerFactory.getLogger(BeanstalkChannel.class);
 
     private BeanstalkReplayReader replayReader;
-    private BeanstalkBufferWriter bufferWriter;
+    private AioSocketChannelWriter channelWriter;
     private LinkedBlockingQueue<Response> queue = new LinkedBlockingQueue<>();
     private Charset charset = Charset.forName("UTF-8");
     private String delimiter = "\r\n";
@@ -58,7 +58,7 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
         ByteBuffer buffer = ByteBuffer.allocateDirect(Command.blockSize);
         buffer = command.prepareRequest(buffer, charset, delimiter);
         log.debug("&&&&& command={}", command.getCommandLine());
-        bufferWriter.write(buffer, this);
+        channelWriter.write(buffer, this);
         Response response = queue.take();
         return response;
     }
@@ -67,9 +67,9 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
         Command quitCommand = new QuitCommand();
         ByteBuffer buffer = ByteBuffer.allocateDirect(Command.blockSize);
         buffer = quitCommand.prepareRequest(buffer, charset, delimiter);
-        bufferWriter.write(buffer, this);
+        channelWriter.write(buffer, this);
         try {
-            bufferWriter.close();
+            channelWriter.close();
             replayReader.close();
         } catch (IOException e) {
             log.error("close channel:{}", e);
@@ -97,7 +97,7 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
         }
         charset = Charset.forName("UTF-8");
         replayReader = new BeanstalkReplayReader(charset, channel);
-        bufferWriter = new BeanstalkBufferWriter(channel);
+        channelWriter = new AioSocketChannelWriter(channel);
 //        replayReader.read(this);
 //        semaphore.release();
         isConnected.set(true);

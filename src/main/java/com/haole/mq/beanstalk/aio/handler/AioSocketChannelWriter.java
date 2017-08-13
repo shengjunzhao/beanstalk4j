@@ -10,12 +10,12 @@ import java.nio.charset.Charset;
 /**
  * Created by shengjunzhao on 2017/7/30.
  */
-public class BeanstalkBufferWriter implements Callback<WriteCallback> {
+public class AioSocketChannelWriter implements Callback<WriteCallback> {
 
     private AsynchronousSocketChannel channel;
     private ByteBuffer buffer;
 
-    public BeanstalkBufferWriter(AsynchronousSocketChannel channel) {
+    public AioSocketChannelWriter(AsynchronousSocketChannel channel) {
         this.channel = channel;
     }
 
