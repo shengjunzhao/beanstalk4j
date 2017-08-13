@@ -1,4 +1,4 @@
-package com.haole.mq.beanstalk.aio.code;
+package com.haole.mq.beanstalk.aio.codec;
 
 import com.haole.mq.beanstalk.aio.channel.AioContextInboud;
 import com.haole.mq.beanstalk.aio.handler.ResponseCallback;

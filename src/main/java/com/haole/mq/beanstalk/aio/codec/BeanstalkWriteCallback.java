@@ -1,4 +1,4 @@
-package com.haole.mq.beanstalk.aio.code;
+package com.haole.mq.beanstalk.aio.codec;
 
 import com.haole.mq.beanstalk.aio.handler.WriteCallback;
 import org.slf4j.Logger;
