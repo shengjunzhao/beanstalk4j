@@ -3,6 +3,8 @@ package com.haole.mq.beanstalk.aio.handler;
 
 import com.haole.mq.beanstalk.aio.channel.AioContextInboud;
 import com.haole.mq.beanstalk.aio.channel.AioSocketChannelEventLoop;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,6 +15,8 @@ import java.nio.channels.ClosedChannelException;
  * Created by shengjunzhao on 2017/8/12.
  */
 public class AioSocketChannelReader extends AbstractReadCallback<ResponseCallback<AioContextInboud>> {
+
+    private static final Logger log = LoggerFactory.getLogger(AioSocketChannelReader.class);
 
     private ByteBuffer buffer;
     private AsynchronousSocketChannel channel;
@@ -36,6 +40,7 @@ public class AioSocketChannelReader extends AbstractReadCallback<ResponseCallbac
         try {
             contextInboud.putByteBuffer(buffer);
             buffer.clear();
+            context.onResponse(contextInboud);
         }finally {
             channel.read(buffer, context, this);
         }
@@ -46,7 +51,7 @@ public class AioSocketChannelReader extends AbstractReadCallback<ResponseCallbac
         try {
             channel.close();
         } catch (IOException e) {
-            // ignore;
+            log.error("close channel error:{}",e);
         }
         failed(new ClosedChannelException(), context);
     }

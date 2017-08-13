@@ -21,6 +21,9 @@ public class AioClientTest {
         servers.add("192.168.209.133:11300");
         servers.add("192.168.209.134:11300");
         BeanstalkProvider provider1 = new AioBeanstalkProvider(servers, "beanstalks1_aio");
+//        long id11 = provider1.put(1024, 0, 3600, ("beanstalks1 aio test" + 2).getBytes("UTF-8"));
+//        System.out.println("beanstalks1 id=" + id11);
+
         BeanstalkProvider provider2 = new AioBeanstalkProvider(servers, "beanstalks2_aio");
         BeanstalkConsumer consumer1 = new AioBeanstalkConsumer(servers, "beanstalks1_aio");
         BeanstalkConsumer consumer2 = new AioBeanstalkConsumer(servers, "beanstalks2_aio");

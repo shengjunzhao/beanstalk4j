@@ -104,9 +104,9 @@ public class AioBootStrap {
 
     public AioSocketChannelEventLoop connect(String host, int port) throws IOException, InterruptedException {
         AioSocketChannelEventLoop eventLoop = new AioSocketChannelEventLoop();
+        eventLoop.setResponseCallback(new BeanstalkReadCallback(charset)).setWriteCallback(new BeanstalkWriteCallback());
         eventLoop = eventLoop.connect(host, port);
-        return eventLoop.setResponseCallback(new BeanstalkReadCallback(charset))
-                .setWriteCallback(new BeanstalkWriteCallback());
+        return eventLoop;
     }
 
     public ByteBuffer write(Command command) {

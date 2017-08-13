@@ -22,6 +22,7 @@ public class BeanstalkReadCallback implements ResponseCallback<AioContextInboud>
 
     public BeanstalkReadCallback(Charset charset) {
         this.decoder = charset;
+        response.reset();
     }
 
     @Override
@@ -73,6 +74,8 @@ public class BeanstalkReadCallback implements ResponseCallback<AioContextInboud>
                             return;
                         }
                     } else {
+                        byte rn = buffer.get();
+                        rn = buffer.get();
                         buffer.compact();
                         Response resultResponse = response.clone();
                         queue.put(resultResponse);
