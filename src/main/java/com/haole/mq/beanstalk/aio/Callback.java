@@ -11,5 +11,5 @@ public interface Callback<T> extends CompletionHandler<Integer, T> {
     void completed(Integer result, T context);
 
     @Override
-    void failed(Throwable exc, T context);
+    void failed(Throwable cause, T context);
 }
