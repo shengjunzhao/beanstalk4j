@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AlreadyConnectedException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.charset.Charset;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,6 +37,8 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
     }
 
     public void connect(InetSocketAddress remote) throws IOException {
+        if (isConnected.get())
+            throw new AlreadyConnectedException();
         SocketConnector connector = new SocketConnector();
         connector.connect(remote, new ConnectionCallback() {
             @Override
@@ -71,6 +74,7 @@ public class BeanstalkChannel implements ResponseCallback<Response>, WriteCallba
         try {
             bufferWriter.close();
             replayReader.close();
+            isConnected.set(true);
         } catch (IOException e) {
             log.error("close channel:{}", e);
         }
