@@ -29,5 +29,29 @@ beanstalk4j是beanstalkd的java版本的客户端，基于netty4开发，作为�
 ```       
  无论是消息提供者还是消息消费者，最后都需要调用quit()用来释放资源。
  
-        
-        
+ * * *
+ # 增加AIO支持
+ 使用AIO实现了beanstalk协议，操作方式同netty4的实现方式。
+        消息提供者示例：
+ ``` java
+          Set<String> servers = new HashSet<>();
+          servers.add("192.168.209.132:11300");
+          servers.add("192.168.209.133:11300");
+          servers.add("192.168.209.134:11300");
+          BeanstalkProvider provider1 = new AioBeanstalkProvider(servers, "beanstalks1_aio");
+          ...
+          provider1.quit();
+ ```
+ 
+        消息消费者示例:
+ ``` java
+           Set<String> servers = new HashSet<>();
+           servers.add("192.168.209.132:11300");
+           servers.add("192.168.209.133:11300");
+           servers.add("192.168.209.134:11300");
+           BeanstalkConsumer consumer1 = new AioBeanstalkConsumer(servers, "beanstalks1_aio");
+           ...
+           consumer1.quit();
+ 
+ ````
+              
