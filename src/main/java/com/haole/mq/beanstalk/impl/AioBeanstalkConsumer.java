@@ -22,20 +22,6 @@ public class AioBeanstalkConsumer implements BeanstalkConsumer {
     private AioBootStrap client;
     private AioSocketChannelEventLoop eventLoop;
 
-//    public AioBeanstalkConsumer(InetSocketAddress remote, String tube) throws IOException, InterruptedException {
-//        client = new AioBeanstalkClient(remote);
-//        if (!client.watch(tube)) {
-//            throw new RuntimeException("can't watch tube " + tube);
-//        }
-//    }
-//
-//    public AioBeanstalkConsumer(String host, int port, String tube) throws IOException, InterruptedException {
-//        client = new AioBeanstalkClient(host, port);
-//        if (!client.watch(tube)) {
-//            throw new RuntimeException("can't watch tube " + tube);
-//        }
-//    }
-
     public AioBeanstalkConsumer(Set<String> servers, String tube) throws IOException, InterruptedException {
         client = AioBootStrap.getInstance();
         client.addServers(servers);
