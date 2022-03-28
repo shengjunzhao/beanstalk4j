@@ -12,11 +12,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.25</slf4j.version>
-        <logback.version>1.2.3</logback.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.2.11</logback.version>
         <junit.version>4.12</junit.version>
-        <jdk.version>1.8</jdk.version>
-        <netty4.version>4.1.7.Final</netty4.version>
+        <jdk.version>17</jdk.version>
+        <netty4.version>4.1.75.Final</netty4.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+
     </properties>
 
     <dependencies>
@@ -83,7 +86,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.0</version>
                 <executions>
                     <execution>
                         <id>default-compile</id>
@@ -94,9 +97,11 @@
                     </execution>
                 </executions>
                 <configuration>
+<!--                    <release>17</release>-->
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
