@@ -21,20 +21,6 @@ public class AioBeanstalkProvider implements BeanstalkProvider {
     private AioBootStrap client;
     private AioSocketChannelEventLoop eventLoop;
 
-//    public AioBeanstalkProvider(InetSocketAddress remote, String tube) throws IOException, InterruptedException {
-//        client = new AioBeanstalkClient(remote);
-//        if (!client.use(tube)) {
-//            throw new RuntimeException("can't use tube " + tube);
-//        }
-//    }
-//
-//    public AioBeanstalkProvider(String host, int port, String tube) throws IOException, InterruptedException {
-//        client = new AioBeanstalkClient(host, port);
-//        if (!client.use(tube)) {
-//            throw new RuntimeException("can't use tube " + tube);
-//        }
-//    }
-
     public AioBeanstalkProvider(Set<String> servers, String tube) throws IOException, InterruptedException {
         client = AioBootStrap.getInstance();
         client.addServers(servers);
