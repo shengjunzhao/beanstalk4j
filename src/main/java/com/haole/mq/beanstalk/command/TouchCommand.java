@@ -1,6 +1,5 @@
 package com.haole.mq.beanstalk.command;
 
-import sun.security.x509.AVA;
 
 /**
  * 允许一个worker请求在一个job获取更多执行的时间
