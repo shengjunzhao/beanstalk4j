@@ -11,7 +11,6 @@
 module com.haole.mq.beanstalk {
     exports com.haole.mq.beanstalk;
 
-    requires java.base;
     requires org.slf4j;
     requires io.netty.handler;
     requires io.netty.buffer;
